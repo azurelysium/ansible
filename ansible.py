@@ -107,9 +107,9 @@ class AnsibleTransport(protocol.Protocol):
             channel = address_map[self.client_ip]['channel']
             if channel in ansible_map:
                 ansible = ansible_map[channel]
-                if ansible['sender'] != self.client_ip:
+                if ('sender' in ansible) and (ansible['sender'] != self.client_ip):
                     address_map[ansible['sender']]['transport'].loseConnection()
-                if ansible['receiver'] != self.client_ip:
+                if ('receiver' in ansible) and (ansible['receiver'] != self.client_ip):
                     address_map[ansible['receiver']]['transport'].loseConnection()
                 del ansible_map[channel]
             del address_map[self.client_ip]
