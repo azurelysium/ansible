@@ -8,6 +8,8 @@ ANSIBLE_FUNC=$1
 ANSIBLE_CHANNEL=$2
 ANSIBLE_FILEPATH=$3
 
+CLIENT_UUID=''
+
 echo ">> Trying to join the channel '${ANSIBLE_CHANNEL}'"
 while true; do
     URL="http://${ANSIBLE_HOST}:${ANSIBLE_PORT_WEB}/${ANSIBLE_FUNC}/${ANSIBLE_CHANNEL}";
@@ -15,16 +17,18 @@ while true; do
     echo "$URL => $OUTPUT";
 
     if [ $(echo "$OUTPUT" | jq .result) = 'true' ]; then
-       break;
+        CLIENT_UUID=$(echo "$OUTPUT" | jq -r .uuid);
+        break;
     fi
     sleep 1;
 done;
 
-echo ">> Trying to send/receive a file '${ANSIBLE_FILEPATH}'"
+echo ">> Trying to ${ANSIBLE_FUNC} a file '${ANSIBLE_FILEPATH}'"
 if [ $ANSIBLE_FUNC = 'send' ]; then
-    nc $ANSIBLE_HOST $ANSIBLE_PORT_TRANSPORT < $ANSIBLE_FILEPATH
-elif [ $ANSIBLE_FUNC = 'receive' ]; then
-    nc $ANSIBLE_HOST $ANSIBLE_PORT_TRANSPORT > $ANSIBLE_FILEPATH
+    cat <(echo -n $CLIENT_UUID) $ANSIBLE_FILEPATH | nc $ANSIBLE_HOST $ANSIBLE_PORT_TRANSPORT;
+fi
+if [ $ANSIBLE_FUNC = 'receive' ]; then
+    echo -n $CLIENT_UUID | nc -q -1 $ANSIBLE_HOST $ANSIBLE_PORT_TRANSPORT > $ANSIBLE_FILEPATH;
 fi
 
 echo "done."
