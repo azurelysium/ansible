@@ -68,6 +68,9 @@ def cleanup_channel(client_ip):
 
     del ansible_map[channel]
 
+    print "AnsibleTransport: channel '{}' is cleaned up".format(channel)
+    pprint(ansible_map)
+
 
 # Ansible Web Server
 class AnsibleWeb(resource.Resource):
@@ -172,7 +175,7 @@ class AnsibleTransport(protocol.Protocol):
             elif 'transport' not in client_info:
                 address_map_put(self.client_ip, self.client_uuid, None, self.transport)
 
-                print 'AnsibleTrnasport: {}/{}'.format(self.client_ip, self.client_uuid)
+                print 'AnsibleTransport: {}/{}'.format(self.client_ip, self.client_uuid)
                 pprint(address_map)
 
         if len(data) == 0:
