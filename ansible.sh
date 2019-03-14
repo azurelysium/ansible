@@ -25,10 +25,10 @@ done;
 
 echo ">> Trying to ${ANSIBLE_FUNC} a file '${ANSIBLE_FILEPATH}'"
 if [ $ANSIBLE_FUNC = 'send' ]; then
-    cat <(echo -n $CLIENT_UUID) $ANSIBLE_FILEPATH | nc $ANSIBLE_HOST $ANSIBLE_PORT_TRANSPORT;
+    cat <(echo -n $CLIENT_UUID) <(base64 $ANSIBLE_FILEPATH) | nc -q 0 $ANSIBLE_HOST $ANSIBLE_PORT_TRANSPORT;
 fi
 if [ $ANSIBLE_FUNC = 'receive' ]; then
-    echo -n $CLIENT_UUID | nc -q -1 $ANSIBLE_HOST $ANSIBLE_PORT_TRANSPORT > $ANSIBLE_FILEPATH;
+    base64 -d <(echo -n $CLIENT_UUID | nc -q -1 $ANSIBLE_HOST $ANSIBLE_PORT_TRANSPORT) > $ANSIBLE_FILEPATH;
 fi
 
 echo "done."
