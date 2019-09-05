@@ -5,7 +5,7 @@
 #
 # $ ansible receive <channel_name> <destination_file>
 #
-# In anoter host,
+# In another host,
 # $ ansible send <channel_name> <source_file>
 #
 from twisted.web import server, resource
